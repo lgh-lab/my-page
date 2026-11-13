@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>우주의 기범 | Self Introduction</title>
+    <style>
+        /* 기본 변수 정의 - 다크 모드 기본 */
+        :root {
+            --bg-gradient: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            --card-bg: rgba(255, 255, 255, 0.07);
+            --card-border: rgba(255, 255, 255, 0.18);
+            --text-color: #ffffff;
+            --sub-text: #b3b3b3;
+            --accent-glow: #00f0ff;
+            --accent-secondary: #7000ff;
+            --accent-pink: #ff007f;
+            --shadow-color: rgba(0, 240, 255, 0.2);
+            --star-color: #ffffff;
+        }
+
+        /* 라이트 모드 변수 */
+        [data-theme="light"] {
+            --bg-gradient: radial-gradient(ellipse at top, #e6f0ff 0%, #c9d6ff 100%);
+            --card-bg: rgba(255, 255, 255, 0.65);
+            --card-border: rgba(0, 100, 255, 0.2);
+            --text-color: #1a1a2e;
+            --sub-text: #4a4a6a;
+            --accent-glow: #0066ff;
+            --accent-secondary: #9900ff;
+            --accent-pink: #d9006c;
+            --shadow-color: rgba(0, 102, 255, 0.15);
+            --star-color: #335588;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.5s ease, color 0.5s ease;
+            position: relative;
+            padding-bottom: 60px;
+        }
+
+        /* 우주 별빛 배경 Canvas */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 메인 컨테이너 */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 상단 모드 전환 버튼 */
+        .header-actions {
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px 0;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            padding: 10px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-glow);
+        }
+
+        /* 히어로 섹션 */
+        .hero {
+            text-align: center;
+            margin: 30px 0 50px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: linear-gradient(90deg, var(--accent-secondary), var(--accent-glow));
+            color: #fff;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            box-shadow: 0 0 15px var(--accent-glow);
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff 30%, var(--accent-glow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px var(--shadow-color);
+        }
+
+        [data-theme="light"] .hero-title {
+            background: linear-gradient(135deg, #1a1a2e 30%, var(--accent-glow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--sub-text);
+            line-height: 1.6;
+        }
+
+        /* 카드 섹션 - 좋아하는 것 3가지 */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 40px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            perspective: 1000px;
+        }
+
+        .card-container {
+            height: 280px;
+            cursor: pointer;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 20px;
+        }
+
+        .card-container.flipped .card {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .card-front {
+            transition: border-color 0.3s;
+        }
+
+        .card-container:hover .card-front {
+            border-color: var(--accent-glow);
+            box-shadow: 0 0 20px var(--shadow-color);
+        }
+
+        .card-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px var(--accent-glow));
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .card-hint {
+            font-size: 0.8rem;
+            color: var(--sub-text);
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, var(--card-bg), rgba(112, 0, 255, 0.15));
+            border-color: var(--accent-glow);
+        }
+
+        .card-back-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            word-break: keep-all;
+        }
+
+        /* OX 퀴즈 섹션 */
+        .quiz-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-question {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+
+        .quiz-btns {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .quiz-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid var(--card-border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            font-size: 2rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .quiz-btn.btn-o {
+            color: #00ff88;
+            border-color: rgba(0, 255, 136, 0.4);
+        }
+
+        .quiz-btn.btn-x {
+            color: #ff4757;
+            border-color: rgba(255, 71, 87, 0.4);
+        }
+
+        .quiz-btn:hover {
+            transform: scale(1.15);
+        }
+
+        .quiz-btn.btn-o:hover {
+            background: rgba(0, 255, 136, 0.2);
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.5);
+        }
+
+        .quiz-btn.btn-x:hover {
+            background: rgba(255, 71, 87, 0.2);
+            box-shadow: 0 0 25px rgba(255, 71, 87, 0.5);
+        }
+
+        .quiz-result {
+            margin-top: 20px;
+            font-weight: 700;
+            min-height: 28px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        /* 운세 뽑기 섹션 */
+        .fortune-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 35px 20px;
+            text-align: center;
+            margin-top: 30px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .fortune-btn {
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-pink));
+            color: white;
+            border: none;
+            padding: 16px 36px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(112, 0, 255, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fortune-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.6);
+        }
+
+        .fortune-btn:active {
+            transform: translateY(1px);
+        }
+
+        .fortune-display {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px dashed var(--card-border);
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--accent-glow);
+            word-break: keep-all;
+        }
+
+        [data-theme="light"] .fortune-display {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* 화면 흔들림 Keyframe 애니메이션 */
+        .shake {
+            animation: spaceShake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes spaceShake {
+            10%, 90% { transform: translate3d(-3px, -2px, 0) rotate(-1deg); }
+            20%, 80% { transform: translate3d(4px, 3px, 0) rotate(1deg); }
+            30%, 50%, 70% { transform: translate3d(-6px, 4px, 0) rotate(-2deg); }
+            40%, 60% { transform: translate3d(6px, -4px, 0) rotate(2deg); }
+        }
+
+        /* 폭죽 및 이펙트 파티클 Canvas */
+        #effectCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* 푸터 */
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: var(--sub-text);
+            font-size: 0.85rem;
+        }
+
+        /* 모바일 대응 레이아웃 */
+        @media (max-width: 600px) {
+            .hero-title {
+                font-size: 2.1rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-container {
+                height: 220px;
+            }
+
+            .quiz-btn {
+                width: 70px;
+                height: 70px;
+                font-size: 1.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 우주 배경 파티클 -->
+    <canvas id="starfield"></canvas>
+    <!-- 축하/아쉬움 이펙트 Canvas -->
+    <canvas id="effectCanvas"></canvas>
+
+    <div class="container" id="mainApp">
+        <!-- 모드 변경 버튼 -->
+        <div class="header-actions">
+            <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">
+                <span id="themeIcon">🌙</span> <span id="themeText">다크 모드</span>
+            </button>
+        </div>
+
+        <!-- 메인 프로필 헤더 -->
+        <header class="hero">
+            <div class="hero-badge">SPACE EXPLORER</div>
+            <h1 class="hero-title">우주의 기범</h1>
+            <p class="hero-subtitle">은하계의 긍정 에너지를 모아 미지의 세계를 탐험하는 우주의 기범입니다 🚀</p>
+        </header>
+
+        <!-- 좋아하는 것 3가지 (플립 카드) -->
+        <section>
+            <h2 class="section-title">✨ 내가 좋아하는 3가지 <span style="font-size: 0.8rem; font-weight: normal; color: var(--sub-text);">(카드를 눌러보세요!)</span></h2>
+            <div class="cards-grid">
+                
+                <!-- 카드 1: 게임 -->
+                <div class="card-container" onclick="flipCard(this)">
+                    <div class="card">
+                        <div class="card-front">
+                            <div class="card-icon">🎮</div>
+                            <h3 class="card-title">게임</h3>
+                            <p class="card-hint">클릭해서 이유 보기 👆</p>
+                        </div>
+                        <div class="card-back">
+                            <p class="card-back-text">"현실 세계의 중력을 잠시 끄고, 우주 최강의 플레이어로 몰입할 수 있는 최고의 미션 수행 창구니까!"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 카드 2: 영화 -->
+                <div class="card-container" onclick="flipCard(this)">
+                    <div class="card">
+                        <div class="card-front">
+                            <div class="card-icon">🎬</div>
+                            <h3 class="card-title">영화</h3>
+                            <p class="card-hint">클릭해서 이유 보기 👆</p>
+                        </div>
+                        <div class="card-back">
+                            <p class="card-back-text">"팝콘 냄새와 함께 2시간 만에 다른 차원의 우주로 워프하는 가장 확실한 간편 여행 방법이니까!"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 카드 3: 운동 -->
+                <div class="card-container" onclick="flipCard(this)">
+                    <div class="card">
+                        <div class="card-front">
+                            <div class="card-icon">🏋️‍♂️</div>
+                            <h3 class="card-title">운동</h3>
+                            <p class="card-hint">클릭해서 이유 보기 👆</p>
+                        </div>
+                        <div class="card-back">
+                            <p class="card-back-text">"우주 탐사를 완수하려면 철통같은 지구력과 파워 엔진 근육이 필수 조건이기 때문이지!"</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- OX 퀴즈 섹션 -->
+        <section>
+            <h2 class="section-title">🧩 우주선 텔레파시 Quiz</h2>
+            <div class="quiz-card">
+                <div class="quiz-question">"나는 지금 집을 가고 싶다" 🏠</div>
+                <div class="quiz-btns">
+                    <button class="quiz-btn btn-o" onclick="checkQuiz(true)">O</button>
+                    <button class="quiz-btn btn-x" onclick="checkQuiz(false)">X</button>
+                </div>
+                <div class="quiz-result" id="quizResult">버튼을 눌러 정답을 맞춰보세요!</div>
+            </div>
+        </section>
+
+        <!-- 오늘의 운세 섹션 (화면 흔들림 효과) -->
+        <section>
+            <h2 class="section-title">🔮 우주의 기운 오늘의 운세</h2>
+            <div class="fortune-section">
+                <button class="fortune-btn" onclick="tellFortune()">✨ 우주의 기운 모아서 운세 뽑기 ✨</button>
+                <div class="fortune-display" id="fortuneDisplay">
+                    버튼을 누르면 우주의 웜홀이 열리며 오늘의 운세가 나타납니다!
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 우주의 기범 | Pure Vanilla Web Page</p>
+        </footer>
+    </div>
+
+    <script>
+        /* ----------------------------------------------------
+           1. 테마 설정 (라이트 / 다크 모드)
+        ---------------------------------------------------- */
+        let isDarkMode = true;
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            const body = document.body;
+            const themeBtn = document.getElementById('themeBtn');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+
+            if (isDarkMode) {
+                body.removeAttribute('data-theme');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = '다크 모드';
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = '라이트 모드';
+            }
+        }
+
+        /* ----------------------------------------------------
+           2. 카드 뒤집기 애니메이션
+        ---------------------------------------------------- */
+        function flipCard(cardContainer) {
+            cardContainer.classList.toggle('flipped');
+        }
+
+        /* ----------------------------------------------------
+           3. OX 퀴즈 판단 & 이펙트 연출
+        ---------------------------------------------------- */
+        function checkQuiz(answer) {
+            const resultDiv = document.getElementById('quizResult');
+            if (answer === true) {
+                // 정답 O
+                resultDiv.style.color = '#00ff88';
+                resultDiv.textContent = '🎉 정답입니다! 마음은 이미 집 안 침대 위 웜홀에 도착했네요!';
+                triggerConfetti();
+            } else {
+                // 오답 X
+                resultDiv.style.color = '#ff4757';
+                resultDiv.textContent = '😭 아쉽지만 오답! 거짓말은 우주법에 저위배됩니다... (집 가고 싶음 100%)';
+                triggerSadEffect();
+            }
+        }
+
+        /* ----------------------------------------------------
+           4. 화면 흔들림 & 랜덤 운세 (16개)
+        ---------------------------------------------------- */
+        const fortunes = [
+            "🌌 오늘 너의 집중력은 블랙홀급! 공부든 게임이든 싹 다 흡수해버릴 운세.",
+            "🪐 우주의 기운이 전폭 지원 중! 가위바위보조차 이길 확률 99.9%.",
+            "🚀 오늘 즉시 귀가의 기운이 강력합니다. 집이 너를 부르고 있다!",
+            "💰 길 가다가 500원을 줍거나, 주머니에서 잊고 있던 만 원을 발견할 운세.",
+            "🍗 오늘 먹는 치킨이나 맛있는 음식의 0칼로리 기적이 일어납니다.",
+            "📡 와이파이 신호가 빵빵하게 터지듯 모든 일이 막힘없이 잘 풀릴 운세!",
+            "🍱 오늘 점심/저녁 메뉴에 네가 좋아하는 음식이 무조건 나올 운세.",
+            "⭐ 행운의 별이 너의 정수리 위에 딱 떠있습니다. 뭘 해도 되는 날!",
+            "🎮 오늘 팀전 게임을 하면 무적 버프를 받는 전설의 날.",
+            "🛏️ 침대와 물아일체가 되어 완벽한 휴식을 취하게 될 평화로운 운세.",
+            "💨 스쳐 지나는 바람조차 너의 쿨함에 감탄하고 갈 엄청난 아우라의 날.",
+            "😂 오늘 네가 하는 개그에 모두가 빵 터지는 유머의 신 강림 운세.",
+            "🎁 뜻밖의 행운으로 오늘 하루 종일 입꼬리가 안 내려갈 예정!",
+            "🛸 우주 정거장에서도 보일 만큼 너의 매력이 폭발하는 날입니다.",
+            "🛡️ 오늘 하루는 어떤 억까(억지 까기)도 다 튕겨내는 무적 방어막 작동!",
+            "👟 신발끈이 단 한 번도 풀리지 않는 소소하지만 확실한 완벽함의 날."
+        ];
+
+        function tellFortune() {
+            const mainApp = document.getElementById('mainApp');
+            const fortuneDisplay = document.getElementById('fortuneDisplay');
+
+            // 화면 흔들기 애니메이션 클래스 부여
+            mainApp.classList.remove('shake');
+            // reflow 강제하여 재실행
+            void mainApp.offsetWidth;
+            mainApp.classList.add('shake');
+
+            // 별똥별 이펙트 발사!
+            triggerShootingStar();
+
+            // 운세 문구 랜덤 선택
+            const randomIndex = Math.floor(Math.random() * fortunes.length);
+            fortuneDisplay.textContent = fortunes[randomIndex];
+
+            // 0.6초 후 애니메이션 클래스 제거
+            setTimeout(() => {
+                mainApp.classList.remove('shake');
+            }, 600);
+        }
+
+        /* ----------------------------------------------------
+           5. 배경 캔버스 (우주 별빛 애니메이션)
+        ---------------------------------------------------- */
+        const starCanvas = document.getElementById('starfield');
+        const starCtx = starCanvas.getContext('2d');
+
+        let stars = [];
+        const numStars = 150;
+
+        function resizeStarCanvas() {
+            starCanvas.width = window.innerWidth;
+            starCanvas.height = window.innerHeight;
+        }
+
+        function createStars() {
+            stars = [];
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * starCanvas.width,
+                    y: Math.random() * starCanvas.height,
+                    radius: Math.random() * 1.8 + 0.2,
+                    alpha: Math.random(),
+                    speed: Math.random() * 0.02 + 0.005
+                });
+            }
+        }
+
+        function drawStars() {
+            starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+            const isLight = document.body.getAttribute('data-theme') === 'light';
+
+            stars.forEach(star => {
+                star.alpha += star.speed;
+                if (star.alpha > 1 || star.alpha < 0) {
+                    star.speed = -star.speed;
+                }
+
+                starCtx.beginPath();
+                starCtx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                starCtx.fillStyle = isLight 
+                    ? `rgba(51, 85, 136, ${Math.abs(star.alpha)})`
+                    : `rgba(255, 255, 255, ${Math.abs(star.alpha)})`;
+                starCtx.fill();
+            });
+
+            requestAnimationFrame(drawStars);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeStarCanvas();
+            createStars();
+        });
+
+        /* ----------------------------------------------------
+           6. 이펙트 캔버스 (축하 파티클, 아쉬움 비 & 별똥별 애니메이션)
+        ---------------------------------------------------- */
+        const effectCanvas = document.getElementById('effectCanvas');
+        const effectCtx = effectCanvas.getContext('2d');
+        let particles = [];
+        let effectAnimationId = null;
+
+        function resizeEffectCanvas() {
+            effectCanvas.width = window.innerWidth;
+            effectCanvas.height = window.innerHeight;
+        }
+
+        // 별똥별 (Shooting Star) 이펙트 - 유성우 연출
+        function triggerShootingStar() {
+            resizeEffectCanvas();
+            
+            // 7~10개의 유성(Meteor)을 밤하늘 전체에서 연쇄 발사
+            const meteorCount = 8;
+            
+            for (let m = 0; m < meteorCount; m++) {
+                setTimeout(() => {
+                    // 화면 우상단~중앙 넓은 영역에서 무작위 출발점 생성
+                    const startX = Math.random() * (effectCanvas.width * 0.9) + effectCanvas.width * 0.2;
+                    const startY = Math.random() * (effectCanvas.height * 0.3) - 50;
+                    
+                    const speed = 25 + Math.random() * 12; // 매우 빠른 속도감
+                    const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.15; // 대각선 낙하 각도
+                    const length = 180 + Math.random() * 120; // 길고 선명한 궤적 길이
+                    const width = 2.5 + Math.random() * 2;
+                    const duration = 25 + Math.random() * 15; // 지속 프레임 수
+                    
+                    // 유성우 대형 선체 파티클 추가
+                    particles.push({
+                        type: 'meteorStream',
+                        x: startX,
+                        y: startY,
+                        vx: -Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        length: length,
+                        width: width,
+                        alpha: 1,
+                        decay: 1 / duration,
+                        headColor: '#ffffff',
+                        tailColor: Math.random() > 0.5 ? '#00f0ff' : '#7000ff'
+                    });
+
+                    // 유성이 지나가면서 흩뿌려지는 잔상 스파크 파티클
+                    for (let j = 0; j < 12; j++) {
+                        particles.push({
+                            type: 'meteorSpark',
+                            x: startX - (Math.random() * length * 0.5),
+                            y: startY + (Math.random() * length * 0.5),
+                            vx: (-Math.cos(angle) * speed * 0.3) + (Math.random() - 0.5) * 2,
+                            vy: (Math.sin(angle) * speed * 0.3) + (Math.random() - 0.5) * 2,
+                            size: Math.random() * 2 + 0.8,
+                            color: Math.random() > 0.3 ? '#00f0ff' : '#ffffff',
+                            alpha: 1,
+                            decay: Math.random() * 0.04 + 0.02
+                        });
+                    }
+
+                    startEffectAnimation();
+                }, m * 90); // 90ms 간격으로 유성이 차례대로 밤하늘을 쏟아져 내림
+            }
+        }
+
+        // 퀴즈 정답 시: 알록달록 폭죽/컨페티 이펙트
+        function triggerConfetti() {
+            resizeEffectCanvas();
+            particles = [];
+            const colors = ['#00f0ff', '#7000ff', '#ff007f', '#00ff88', '#ffea00'];
+
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: effectCanvas.width / 2,
+                    y: effectCanvas.height / 2,
+                    vx: (Math.random() - 0.5) * 14,
+                    vy: (Math.random() - 0.7) * 14,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    alpha: 1,
+                    decay: Math.random() * 0.02 + 0.015,
+                    type: 'confetti'
+                });
+            }
+            startEffectAnimation();
+        }
+
+        // 퀴즈 오답 시: 파란 눈물/비 쏟아지는 아쉬운 이펙트
+        function triggerSadEffect() {
+            resizeEffectCanvas();
+            particles = [];
+
+            for (let i = 0; i < 60; i++) {
+                particles.push({
+                    x: Math.random() * effectCanvas.width,
+                    y: -20,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: Math.random() * 8 + 5,
+                    size: Math.random() * 3 + 2,
+                    color: '#ff4757',
+                    alpha: 0.8,
+                    decay: 0.01,
+                    type: 'rain'
+                });
+            }
+            startEffectAnimation();
+        }
+
+        function startEffectAnimation() {
+            if (effectAnimationId) cancelAnimationFrame(effectAnimationId);
+            animateEffects();
+        }
+
+        function animateEffects() {
+            effectCtx.clearRect(0, 0, effectCanvas.width, effectCanvas.height);
+
+            particles.forEach((p, index) => {
+                p.alpha -= p.decay;
+
+                if (p.type === 'meteorStream') {
+                    // 유성우 궤적 렌더링 (헤드에서 꼬리로 이어지는 그래디언트 스트림)
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    const tailX = p.x - (p.vx / Math.hypot(p.vx, p.vy)) * p.length;
+                    const tailY = p.y - (p.vy / Math.hypot(p.vx, p.vy)) * p.length;
+
+                    const grad = effectCtx.createLinearGradient(p.x, p.y, tailX, tailY);
+                    grad.addColorStop(0, p.headColor);
+                    grad.addColorStop(0.2, p.tailColor);
+                    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+                    effectCtx.save();
+                    effectCtx.globalAlpha = Math.max(0, p.alpha);
+                    effectCtx.strokeStyle = grad;
+                    effectCtx.lineWidth = p.width;
+                    effectCtx.lineCap = 'round';
+                    effectCtx.shadowColor = p.tailColor;
+                    effectCtx.shadowBlur = 12;
+
+                    effectCtx.beginPath();
+                    effectCtx.moveTo(p.x, p.y);
+                    effectCtx.lineTo(tailX, tailY);
+                    effectCtx.stroke();
+                    effectCtx.restore();
+
+                } else if (p.type === 'meteorSpark') {
+                    // 잔상 스파크 렌더링
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    effectCtx.save();
+                    effectCtx.globalAlpha = Math.max(0, p.alpha);
+                    effectCtx.fillStyle = p.color;
+                    effectCtx.beginPath();
+                    effectCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    effectCtx.fill();
+                    effectCtx.restore();
+
+                } else {
+                    // 기존 폭죽 및 비 이펙트 파티클
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.type === 'confetti') {
+                        p.vy += 0.2; // 중력 적용
+                    }
+
+                    effectCtx.save();
+                    effectCtx.globalAlpha = Math.max(0, p.alpha);
+                    effectCtx.fillStyle = p.color;
+                    effectCtx.beginPath();
+                    effectCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    effectCtx.fill();
+                    effectCtx.restore();
+                }
+
+                if (p.alpha <= 0) {
+                    particles.splice(index, 1);
+                }
+            });
+
+            if (particles.length > 0) {
+                effectAnimationId = requestAnimationFrame(animateEffects);
+            } else {
+                effectCtx.clearRect(0, 0, effectCanvas.width, effectCanvas.height);
+            }
+        }
+
+        // 최초 초기화 실행
+        window.onload = function() {
+            resizeStarCanvas();
+            createStars();
+            drawStars();
+            resizeEffectCanvas();
+        };
+        window.addEventListener('resize', () => {
+            resizeStarCanvas();
+            createStars();
+            resizeEffectCanvas();
+        });
+    </script>
+</body>
+</html>
