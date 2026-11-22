@@ -2,7 +2,7 @@
 <html lang="ko"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>소개</title>
+    <title>갤러리</title>
     <style>
         /* 기본 변수 정의 - 다크 모드 기본 */
         :root {
@@ -490,6 +490,8 @@
 .st-tnum.is-done{animation:stblink 1s 3}@keyframes stblink{50%{opacity:.2}}
 .st-embed iframe{display:block;width:100%;aspect-ratio:16/9;height:auto;border:0;border-radius:14px}
 .st-embed[data-kind=map] iframe{aspect-ratio:4/3}
+.st-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+.st-row>*{margin-top:0;margin-bottom:0}.st-row>.st-img,.st-row>img{flex:1 1 160px;min-width:0}
 .st-cols{display:grid;gap:16px}
 .st-c2{grid-template-columns:repeat(2,minmax(0,1fr))}.st-c3{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:600px){.st-c2,.st-c3{grid-template-columns:1fr}}
@@ -512,6 +514,52 @@ html.st-editing [data-st-in]{opacity:1!important;transform:none!important}
 html.st-dark{filter:invert(1) hue-rotate(180deg);background:#fff}
 html.st-dark img,html.st-dark video,html.st-dark iframe,html.st-dark canvas{filter:invert(1) hue-rotate(180deg)}
 .st-editing .st-tab-panel{display:block!important;outline:2px dashed rgba(0,0,0,.18);outline-offset:4px;margin:12px 0}
+.st-dform{max-width:560px;text-align:left}
+.st-fl{display:block;margin:0 0 12px}
+.st-fl>span{display:block;font-weight:700;font-size:.92rem;margin-bottom:4px}
+.st-fl input,.st-fl select,.st-fl textarea{box-sizing:border-box;width:100%;padding:11px 12px;border:1.5px solid rgba(0,0,0,.25);border-radius:10px;font:inherit;font-size:1rem;background:#fff;color:#222}
+.st-fl textarea{min-height:84px;resize:vertical}
+.st-fl .st-rg{display:flex;flex-wrap:wrap;gap:8px}
+.st-fl .st-rg label{display:inline-block;margin:0}
+.st-fl .st-rg input{position:absolute;opacity:0;width:1px;height:1px;padding:0;border:0}
+.st-fl .st-rg label>span{display:inline-block;padding:9px 15px;border:1.5px solid rgba(0,0,0,.25);border-radius:999px;cursor:pointer;font-size:1rem;background:#fff;font-weight:400;margin:0}
+.st-fl .st-rg input:checked+span{background:var(--st-accent);color:#fff;border-color:var(--st-accent);font-weight:700}
+.st-fl .st-rg input:focus-visible+span{outline:2px solid var(--st-accent);outline-offset:2px}
+.st-uw{display:flex;align-items:center;gap:10px}
+.st-fl .st-uw input{flex:1;min-width:0}
+.st-fl .st-uw input[type=range]{padding:0;border:0;accent-color:var(--st-accent);background:transparent}
+.st-u,.st-rv{font-weight:800;min-width:1.6em;text-align:right}
+.st-dl-ctl{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.st-dl-q{flex:1 1 160px;min-width:0;box-sizing:border-box;padding:9px 12px;border:1.5px solid rgba(0,0,0,.25);border-radius:10px;font:inherit;background:#fff;color:#222}
+.st-dl-f{display:flex;flex-wrap:wrap;gap:6px}
+.st-dl-fb{padding:7px 13px;border-radius:999px;border:1.5px solid rgba(0,0,0,.25);background:#fff;font:inherit;font-size:.9rem;cursor:pointer;color:#333}
+.st-dl-fb.is-on{background:var(--st-accent);color:#fff;border-color:var(--st-accent);font-weight:700}
+.st-fl input:focus,.st-fl select:focus,.st-fl textarea:focus{outline:2px solid var(--st-accent);outline-offset:1px}
+.st-fmsg{min-height:1.4em;margin:6px 0 0;font-size:.95rem;font-weight:700}
+.st-dl-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.st-dl-rf{padding:8px 14px;border-radius:10px;border:1.5px solid rgba(0,0,0,.25);background:#fff;font:inherit;font-size:.9rem;font-weight:700;cursor:pointer;color:#333}
+.st-dl-out{display:grid;gap:10px;text-align:left}
+.st-dl-i{border:1px solid rgba(0,0,0,.1);border-radius:14px;padding:12px 14px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.st-dl-i p{margin:3px 0;word-break:break-word;line-height:1.5}
+.st-dl-i .st-t{font-weight:800}
+.st-dl-i .st-k{font-size:.8rem;color:#666;margin-right:6px}
+.st-dl-i .st-sm{font-size:.8rem;color:#777}
+.st-dl-b .st-dl-i{border-radius:4px 18px 18px 18px;background:rgba(0,0,0,.045);box-shadow:none;border:0;max-width:92%}
+.st-dl-tw{overflow-x:auto}
+.st-dl-t{width:100%;border-collapse:collapse;font-size:.95rem}
+.st-dl-t th,.st-dl-t td{padding:9px 10px;border-bottom:1px solid rgba(0,0,0,.12);text-align:left;white-space:nowrap}
+.st-dl-t th{background:rgba(0,0,0,.05)}
+.st-del{margin-top:4px;padding:6px 12px;border-radius:8px;border:1.5px solid rgba(0,0,0,.25);background:#fff;font:inherit;font-size:.85rem;cursor:pointer;color:#b91c1c;font-weight:700}
+.st-dmsg{margin:8px 0 0;font-size:.9rem;color:#666}
+.st-dstat{text-align:center}
+.st-ds-num{font-size:2.6rem;font-weight:900;color:var(--st-accent);margin:4px 0;line-height:1.2}
+.st-ds-bars{display:grid;gap:8px;text-align:left;max-width:560px;margin:10px auto 0}
+.st-ds-row{display:grid;grid-template-columns:minmax(72px,30%) 1fr auto;gap:8px;align-items:center;font-size:.95rem}
+.st-ds-row>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st-ds-bar{height:18px;background:rgba(0,0,0,.09);border-radius:9px;overflow:hidden}
+.st-ds-bar i{display:block;height:100%;background:var(--st-accent);border-radius:9px;transition:width .5s}
+.st-dset>.st-sec{margin-top:16px;margin-bottom:16px}
+.st-editing .st-del{display:none}
 .st-editing .st-slides{flex-wrap:wrap;gap:10px;overflow:visible}
 .st-editing .st-prev,.st-editing .st-next{display:none}
 .st-editing dialog.st-modal{display:block;position:static;margin:12px auto;outline:2px dashed rgba(0,0,0,.25)}
@@ -521,30 +569,23 @@ html.st-dark img,html.st-dark video,html.st-dark iframe,html.st-dark canvas{filt
 <nav class="st-nav" data-studio="nav">
   <div class="st-nav-in">
     <a class="st-nav-a" href="index.html">홈</a>
-    <a class="st-nav-a is-on" href="about.html">소개</a>
+    <a class="st-nav-a is-on" href="about.html">갤러리</a>
     <a class="st-nav-a" href="favorite.html">갤러리</a>
   </div>
 </nav>
 
 <div class="container">
-  <h1 class="hero-title st-g-peach" style="font-weight: 700;">소개</h1>
-  <p class="hero-subtitle">이 페이지에 들어갈 내용을 왼쪽 블록 넣기로 채워 보세요.</p>
+  <h1 class="hero-title">갤러리</h1>
+  <p class="hero-subtitle">강아지들<br></p>
 </div>
-<div class="st-sec st-cols st-c3">
-  <div class="st-col">
-    <h3 class="st-h">첫째</h3>
-    <p class="st-p">내용을 써요.</p>
-  </div>
-  <div class="st-col">
-    <h3 class="st-h">둘째</h3>
-    <p class="st-p">내용을 써요.</p>
-  </div>
-  <div class="st-col">
-    <h3 class="st-h">셋째</h3>
-    <p class="st-p">내용을 써요.</p>
-  </div>
-</div>
-<figure class="st-img" style="max-width: 100%; width: 75%;">
-  <img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22500%22%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22%23ececec%22%2F%3E%3Ctext%20x%3D%22400%22%20y%3D%22262%22%20font-family%3D%22sans-serif%22%20font-size%3D%2240%22%20fill%3D%22%23999%22%20text-anchor%3D%22middle%22%3E%EC%82%AC%EC%A7%84%3C%2Ftext%3E%3C%2Fsvg%3E" alt="">
+<figure class="st-img" style="max-width: 100%; width: 50%;">
+  <img src="https://i.pinimg.com/originals/b7/5a/07/b75a073da1e97306d7d3796db2e6577a.jpg?nii=t" alt="">
+</figure>
+<figure class="st-img" style="max-width: 100%; width: 50%;">
+  <img src="https://d.newsweek.com/en/full/2272085/balltze-dog-aka-cheems.jpg" alt="">
+</figure>
+<figure class="st-img" style="max-width: 100%; width: 50%;">
+  <img src="https://i.pinimg.com/736x/c7/d5/1b/c7d51b69e121c9b9dc17628c1ab5651b.jpg" alt="">
+  <a class="st-btn" href="favorite.html">바로가기</a>
 </figure>
 </body></html>
